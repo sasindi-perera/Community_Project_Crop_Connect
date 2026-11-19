@@ -1,66 +1,85 @@
-import { SymbolView } from 'expo-symbols';
-import { Link, Tabs } from 'expo-router';
-import { Platform, Pressable } from 'react-native';
-
-import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import React from 'react';
+import { Tabs } from 'expo-router';
+import { Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Palette } from '@/src/constants/theme';
+import { useTheme } from '@/src/hooks/useTheme';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const { isDark } = useTheme();
+
+  const activeColor = isDark ? Palette.sageGreen : Palette.forestGreen;
+  const inactiveColor = isDark ? '#64748B' : Palette.slateMedium;
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: useClientOnlyValue(false, true),
-      }}>
+        tabBarActiveTintColor: activeColor,
+        tabBarInactiveTintColor: inactiveColor,
+        headerShown: false,
+        tabBarStyle: {
+          backgroundColor: isDark ? '#141C17' : '#FFFFFF',
+          borderTopColor: isDark ? '#233229' : Palette.warmBorder,
+          borderTopWidth: 1,
+          height: Platform.OS === 'ios' ? 88 : 65,
+          paddingBottom: Platform.OS === 'ios' ? 28 : 10,
+          paddingTop: 8,
+        },
+        tabBarLabelStyle: {
+          fontWeight: '700',
+          fontSize: 11,
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{
-                ios: 'chevron.left.forwardslash.chevron.right',
-                android: 'code',
-                web: 'code',
-              }}
-              tintColor={color}
-              size={28}
+          title: 'Market',
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={focused ? 'leaf' : 'leaf-outline'}
+              size={22}
+              color={focused ? activeColor : inactiveColor}
             />
-          ),
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable style={{ marginRight: 15 }}>
-                {({ pressed }) => (
-                  <SymbolView
-                    name={{ ios: 'info.circle', android: 'info', web: 'info' }}
-                    size={25}
-                    tintColor={Colors[colorScheme].text}
-                    style={{ opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
           ),
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="rescue"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => (
-            <SymbolView
-              name={{
-                ios: 'chevron.left.forwardslash.chevron.right',
-                android: 'code',
-                web: 'code',
-              }}
-              tintColor={color}
-              size={28}
+          title: 'Rescue Hub',
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={focused ? 'flash' : 'flash-outline'}
+              size={22}
+              color={focused ? Palette.rescueRed : inactiveColor}
+            />
+          ),
+          tabBarActiveTintColor: Palette.rescueRed,
+        }}
+      />
+      <Tabs.Screen
+        name="advisor"
+        options={{
+          title: 'AI Advisor',
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={focused ? 'sparkles' : 'sparkles-outline'}
+              size={22}
+              color={focused ? activeColor : inactiveColor}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={focused ? 'person' : 'person-outline'}
+              size={22}
+              color={focused ? activeColor : inactiveColor}
             />
           ),
         }}
