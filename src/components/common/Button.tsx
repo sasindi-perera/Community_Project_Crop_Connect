@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Palette, Spacing, BorderRadius } from '../../constants/theme';
+import { Palette, BorderRadius } from '../../constants/theme';
 import { useResponsive } from '../../hooks/useResponsive';
 
 type ButtonVariant = 'primary' | 'secondary' | 'rescue' | 'outline' | 'ghost';

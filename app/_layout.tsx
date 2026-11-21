@@ -13,7 +13,7 @@ export {
 } from 'expo-router';
 
 export const unstable_settings = {
-  anchor: '(tabs)',
+  anchor: '(farmer)',
 };
 
 // Prevent splash screen from auto-hiding before asset loading is complete
@@ -57,12 +57,31 @@ function RootLayoutNav() {
         screenOptions={{
           headerShown: false,
           contentStyle: {
-            backgroundColor: isDark ? '#121815' : '#FAF7F2',
+            backgroundColor: isDark ? '#121815' : '#F8F7F0',
           },
         }}
       >
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="listing/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+        <Stack.Screen name="welcome" options={{ headerShown: false }} />
+        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="register" options={{ headerShown: false }} />
+        <Stack.Screen name="forgot-password" options={{ headerShown: false }} />
+        <Stack.Screen name="role-selection" options={{ headerShown: false }} />
+        <Stack.Screen name="(farmer)" options={{ headerShown: false }} />
+        <Stack.Screen name="(buyer)" options={{ headerShown: false }} />
+        <Stack.Screen name="(admin)" options={{ headerShown: false }} />
+        <Stack.Screen name="crop/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="buyer/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="nearby-buyers" options={{ headerShown: false }} />
+        <Stack.Screen name="map-view" options={{ headerShown: false }} />
+        <Stack.Screen name="ai-prediction" options={{ headerShown: false }} />
+        <Stack.Screen name="price-comparison" options={{ headerShown: false }} />
+        <Stack.Screen name="price-history" options={{ headerShown: false }} />
+        <Stack.Screen name="notifications" options={{ headerShown: false }} />
+        <Stack.Screen name="settings" options={{ headerShown: false }} />
+        <Stack.Screen name="help" options={{ headerShown: false }} />
+        <Stack.Screen name="edit-profile" options={{ headerShown: false }} />
         <Stack.Screen
           name="modal"
           options={{

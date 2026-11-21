@@ -1,0 +1,203 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ==========================================
+    // HELPER FUNCTIONS & AUTH GUARDS
+    // ==========================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'admin' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         getUserData().role == 'admin')
+      );
+    }
+
+    function isFarmer() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'farmer' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         getUserData().role == 'farmer')
+      );
+    }
+
+    function isBuyer() {
+      return isAuthenticated() && (
+        request.auth.token.role == 'buyer' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         getUserData().role == 'buyer')
+      );
+    }
+
+    // ==========================================
+    // 1. USERS COLLECTION
+    // ==========================================
+    match /users/{userId} {
+      // Authenticated users can read member profiles
+      allow read: if isAuthenticated();
+
+      // Only owner can create; cannot self-assign 'admin' role
+      allow create: if isOwner(userId) && request.resource.data.role != 'admin';
+
+      // Only owner or admin can update; regular users cannot elevate role to admin
+      allow update: if isOwner(userId) && (
+        request.resource.data.role == resource.data.role || isAdmin()
+      );
+
+      // Only administrators can delete user accounts
+      allow delete: if isAdmin();
+    }
+
+    // ==========================================
+    // 2. FARMERS COLLECTION
+    // ==========================================
+    match /farmers/{farmerId} {
+      allow read: if isAuthenticated();
+      // Farmers can only create or update their own profile
+      allow create, update: if isOwner(farmerId);
+      allow delete: if isOwner(farmerId) || isAdmin();
+    }
+
+    // ==========================================
+    // 3. BUYERS COLLECTION
+    // ==========================================
+    match /buyers/{buyerId} {
+      allow read: if isAuthenticated();
+      // Buyers can only create or update their own purchasing profile
+      allow create, update: if isOwner(buyerId);
+      allow delete: if isOwner(buyerId) || isAdmin();
+    }
+
+    // ==========================================
+    // 4. CROPS MASTER CATALOGUE
+    // ==========================================
+    match /crops/{cropId} {
+      // All authenticated agrarian members can browse master crop definitions
+      allow read: if isAuthenticated();
+      // Strictly restricted to authorized admins
+      allow write: if isAdmin();
+    }
+
+    // ==========================================
+    // 5. CROP LISTINGS COLLECTION
+    // ==========================================
+    match /cropListings/{listingId} {
+      allow read: if isAuthenticated();
+
+      // Farmers can create listings where farmerId equals their authenticated UID
+      allow create: if isAuthenticated() && request.resource.data.farmerId == request.auth.uid;
+
+      // Farmers must NOT edit another farmer's listings
+      // Buyers are only allowed to increment counters (activeOffersCount, viewsCount)
+      allow update: if isAuthenticated() && (
+        resource.data.farmerId == request.auth.uid ||
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['activeOffersCount', 'viewsCount', 'updatedAt'])) ||
+        isAdmin()
+      );
+
+      // Only listing owner or admin can delete
+      allow delete: if isAuthenticated() && (resource.data.farmerId == request.auth.uid || isAdmin());
+    }
+
+    // ==========================================
+    // 6. BUYER OFFERS COLLECTION
+    // ==========================================
+    match /buyerOffers/{offerId} {
+      // Only the buyer who made the offer, the farmer who owns the listing, or admin can read
+      allow read: if isAuthenticated() && (
+        resource.data.buyerId == request.auth.uid ||
+        resource.data.farmerId == request.auth.uid ||
+        isAdmin()
+      );
+
+      // Buyers can submit offers under their own buyerId
+      allow create: if isAuthenticated() && request.resource.data.buyerId == request.auth.uid;
+
+      // Buyer can withdraw/counter their offer; Farmer can accept/reject/counter
+      allow update: if isAuthenticated() && (
+        resource.data.buyerId == request.auth.uid ||
+        resource.data.farmerId == request.auth.uid ||
+        isAdmin()
+      );
+
+      // Buyer who created the offer or admin can delete
+      allow delete: if isAuthenticated() && (resource.data.buyerId == request.auth.uid || isAdmin());
+    }
+
+    // ==========================================
+    // 7. ENQUIRIES COLLECTION
+    // ==========================================
+    match /enquiries/{enquiryId} {
+      // Private direct enquiries: only sender or recipient can read
+      allow read: if isAuthenticated() && (
+        resource.data.senderId == request.auth.uid ||
+        resource.data.recipientId == request.auth.uid ||
+        isAdmin()
+      );
+
+      // Sender must match authenticated UID
+      allow create: if isAuthenticated() && request.resource.data.senderId == request.auth.uid;
+
+      // Recipient can mark isRead; sender can edit message
+      allow update: if isAuthenticated() && (
+        resource.data.recipientId == request.auth.uid ||
+        resource.data.senderId == request.auth.uid
+      );
+
+      allow delete: if isAuthenticated() && (
+        resource.data.senderId == request.auth.uid ||
+        isAdmin()
+      );
+    }
+
+    // ==========================================
+    // 8. MARKET PRICES COLLECTION
+    // ==========================================
+    match /marketPrices/{priceId} {
+      // Daily wholesale benchmarks are readable by all users
+      allow read: if isAuthenticated();
+      // Only agrarian officials and administrators can publish verified market prices
+      allow write: if isAdmin();
+    }
+
+    // ==========================================
+    // 9. PRICE PREDICTIONS COLLECTION
+    // ==========================================
+    match /pricePredictions/{predId} {
+      // Fair-price predictions are publicly readable by all members
+      allow read: if isAuthenticated();
+      // Writable by administrators or automated backend prediction pipelines
+      allow write: if isAdmin();
+    }
+
+    // ==========================================
+    // 10. NOTIFICATIONS COLLECTION
+    // ==========================================
+    match /notifications/{notifId} {
+      // Notifications are private: only recipient can read
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+
+      // Authenticated services and users can trigger notifications to other users
+      allow create: if isAuthenticated();
+
+      // Recipient can update read status
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+
+      // Recipient or admin can dismiss/delete
+      allow delete: if isAuthenticated() && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+  }
+}

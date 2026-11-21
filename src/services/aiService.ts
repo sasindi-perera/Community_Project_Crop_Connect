@@ -27,7 +27,7 @@ export async function predictFairPrice(
       const data = await response.json();
       return data;
     }
-  } catch (_error) {
+  } catch {
     // Graceful fallback to offline model estimation
   }
 

@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Palette, Spacing, BorderRadius, Shadows } from '../constants/theme';
+import { Palette, BorderRadius, Shadows } from '../constants/theme';
 import { Badge } from '../components/common/Badge';
 import { Button } from '../components/common/Button';
 import { useResponsive } from '../hooks/useResponsive';

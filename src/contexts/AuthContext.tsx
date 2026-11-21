@@ -1,89 +1,171 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../config/firebase';
 import { UserProfile, UserRole } from '../types/user';
+import {
+  RegisterData,
+  loginWithFirebase,
+  registerWithFirebase,
+  logoutWithFirebase,
+  sendPasswordReset,
+} from '../services/authService';
+import {
+  MOCK_FARMER_USER,
+  MOCK_BUYER_USER,
+  MOCK_ADMIN_USER,
+} from '../services/mockDataService';
 
 interface AuthContextType {
   user: UserProfile | null;
   role: UserRole;
   isAuthenticated: boolean;
+  loading: boolean;
+  error: string | null;
+  login: (email: string, password: string, hintRole?: UserRole) => Promise<UserProfile>;
+  register: (data: RegisterData) => Promise<UserProfile>;
+  logout: () => Promise<void>;
+  forgotPassword: (email: string) => Promise<void>;
   switchRole: (newRole: UserRole) => void;
+  clearError: () => void;
   setUser: (user: UserProfile | null) => void;
-  logout: () => void;
 }
 
-const mockFarmer: UserProfile = {
-  id: 'farmer_001',
-  fullName: 'Sunil Bandara',
-  phone: '+94 77 123 4567',
-  email: 'sunil.bandara@cropconnect.lk',
-  role: 'farmer',
-  location: {
-    latitude: 6.9497,
-    longitude: 80.7891,
-    district: 'Nuwara Eliya',
-    address: 'Kandapola Road, Nuwara Eliya',
-    province: 'Central',
-  },
-  farmName: 'Green Valley Organic Farm',
-  farmSizeAcres: 3.5,
-  rating: 4.8,
-  dealsCompleted: 42,
-  isVerified: true,
-  createdAt: '2025-08-15',
-};
-
-const mockBuyer: UserProfile = {
-  id: 'buyer_001',
-  fullName: 'Dilan Perera',
-  phone: '+94 71 987 6543',
-  email: 'dilan.freshmart@cropconnect.lk',
-  role: 'buyer',
-  location: {
-    latitude: 6.9271,
-    longitude: 79.8612,
-    district: 'Colombo',
-    address: 'Manning Market, Pettah',
-    province: 'Western',
-  },
-  buyerBusinessType: 'wholesaler',
-  rating: 4.9,
-  dealsCompleted: 88,
-  isVerified: true,
-  createdAt: '2025-05-10',
-};
-
 const AuthContext = createContext<AuthContextType>({
-  user: mockFarmer,
+  user: MOCK_FARMER_USER,
   role: 'farmer',
   isAuthenticated: true,
+  loading: false,
+  error: null,
+  login: async () => MOCK_FARMER_USER,
+  register: async () => MOCK_FARMER_USER,
+  logout: async () => {},
+  forgotPassword: async () => {},
   switchRole: () => {},
+  clearError: () => {},
   setUser: () => {},
-  logout: () => {},
 });
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<UserProfile | null>(MOCK_FARMER_USER);
   const [role, setRole] = useState<UserRole>('farmer');
-  const [user, setUser] = useState<UserProfile | null>(mockFarmer);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const switchRole = (newRole: UserRole) => {
-    setRole(newRole);
-    if (newRole === 'farmer') {
-      setUser(mockFarmer);
-    } else if (newRole === 'buyer') {
-      setUser(mockBuyer);
-    } else {
-      setUser({
-        ...mockFarmer,
-        id: 'admin_001',
-        fullName: 'Agrarian Admin (Govt Liaison)',
-        role: 'admin',
+  // Listen for real Firebase Auth state changes
+  useEffect(() => {
+    let isMounted = true;
+
+    try {
+      const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+        if (!isMounted) return;
+
+        if (firebaseUser) {
+          try {
+            // Fetch profile from Cloud Firestore
+            const docRef = doc(db, 'users', firebaseUser.uid);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists() && isMounted) {
+              const profile = docSnap.data() as UserProfile;
+              setUser(profile);
+              setRole(profile.role);
+              setIsAuthenticated(true);
+            }
+          } catch {
+            // Retain active session
+          }
+        }
       });
+
+      return () => {
+        isMounted = false;
+        unsubscribe();
+      };
+    } catch {
+      // Fallback
+    }
+  }, []);
+
+  const clearError = () => setError(null);
+
+  const login = async (
+    email: string,
+    password: string,
+    hintRole?: UserRole
+  ): Promise<UserProfile> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const profile = await loginWithFirebase(email, password, hintRole);
+      setUser(profile);
+      setRole(profile.role);
+      setIsAuthenticated(true);
+      return profile;
+    } catch (err: any) {
+      const msg = err?.message || 'Login failed. Please check your credentials.';
+      setError(msg);
+      throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    setIsAuthenticated(false);
+  const register = async (data: RegisterData): Promise<UserProfile> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const profile = await registerWithFirebase(data);
+      setUser(profile);
+      setRole(profile.role);
+      setIsAuthenticated(true);
+      return profile;
+    } catch (err: any) {
+      const msg = err?.message || 'Registration failed. Please check your input.';
+      setError(msg);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const logout = async (): Promise<void> => {
+    setLoading(true);
+    try {
+      await logoutWithFirebase();
+      setUser(null);
+      setIsAuthenticated(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const forgotPassword = async (email: string): Promise<void> => {
+    setLoading(true);
+    setError(null);
+    try {
+      await sendPasswordReset(email);
+    } catch (err: any) {
+      const msg = err?.message || 'Unable to send password reset email.';
+      setError(msg);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Demo role switcher for testing all 3 user roles
+  const switchRole = (newRole: UserRole) => {
+    setRole(newRole);
+    if (newRole === 'farmer') {
+      setUser(MOCK_FARMER_USER);
+    } else if (newRole === 'buyer') {
+      setUser(MOCK_BUYER_USER);
+    } else {
+      setUser(MOCK_ADMIN_USER);
+    }
+    setIsAuthenticated(true);
   };
 
   return (
@@ -92,9 +174,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         role,
         isAuthenticated,
-        switchRole,
-        setUser,
+        loading,
+        error,
+        login,
+        register,
         logout,
+        forgotPassword,
+        switchRole,
+        clearError,
+        setUser,
       }}
     >
       {children}

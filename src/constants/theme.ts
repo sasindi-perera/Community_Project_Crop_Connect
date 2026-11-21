@@ -1,33 +1,41 @@
 /**
  * CropConnect - Design System & Theme
- * Premium Agricultural Palette: Natural Green, White, and Warm Cream.
+ * Primary: Forest Green (#245C46)
+ * Secondary: Fresh Green (#70A879)
+ * Background: Warm Cream (#F8F7F0)
+ * Accent: Golden Yellow (#F4C95D)
  */
 
 export const Palette = {
-  // Natural Greens
-  forestGreen: '#1E5128',
-  leafGreen: '#2D6A4F',
-  emeraldGreen: '#40916C',
-  sageGreen: '#74C69D',
-  mintGreen: '#D8F3DC',
-  paleGreen: '#EAF7ED',
+  // Brand Agricultural Colors
+  primary: '#245C46',        // Forest Green
+  primaryDark: '#1A4333',
+  primaryLight: '#307A5D',
+  primaryTint: '#E8F3EE',    // Very soft green tint
 
-  // Warm Creams & Earth Tones
-  warmCream: '#FAF7F2',
-  parchment: '#F5EFE6',
-  linen: '#EBE3D5',
-  sand: '#DFD3C3',
-  clay: '#C7B198',
+  secondary: '#70A879',      // Fresh Green
+  secondaryDark: '#568E5F',
+  secondaryLight: '#8BC194',
+  secondaryTint: '#F0F7F2',
 
-  // Harvest & Accents
-  harvestGold: '#D97706',
-  amberLight: '#FEF3C7',
+  accent: '#F4C95D',         // Golden Yellow
+  accentDark: '#D8AB3A',
+  accentLight: '#FBE8B3',
+  accentTint: '#FEF9ED',
+
+  background: '#F8F7F0',     // Warm Cream
+  surface: '#FFFFFF',        // Pure White Card
+  surfaceAlt: '#F2EFE6',     // Slightly darker cream
+  warmBorder: '#E8E4D8',
+  subtleBorder: '#EBE7DC',
+
+  // Alert & Crop Rescue Urgency
   rescueRed: '#DC2626',
   rescueLight: '#FEE2E2',
-  infoBlue: '#0284C7',
-  infoLight: '#E0F2FE',
+  rescueDark: '#B91C1C',
+  rescueBorder: '#FECACA',
 
-  // Neutrals
+  // Neutrals & Text
   white: '#FFFFFF',
   black: '#0F172A',
   charcoal: '#1E293B',
@@ -35,54 +43,72 @@ export const Palette = {
   slateMedium: '#64748B',
   slateLight: '#94A3B8',
   slateBorder: '#E2E8F0',
-  warmBorder: '#EAE3D6',
-  cardBackground: '#FFFFFF',
+  disabled: '#CBD5E1',
+
+  // Semantic Status
+  success: '#15803D',
+  successLight: '#DCFCE7',
+  warning: '#D97706',
+  warningLight: '#FEF3C7',
+  info: '#0284C7',
+  infoLight: '#E0F2FE',
+
+  // Backward-compatibility aliases
+  forestGreen: '#245C46',
+  leafGreen: '#70A879',
+  emeraldGreen: '#307A5D',
+  sageGreen: '#8BC194',
+  paleGreen: '#E8F3EE',
+  warmCream: '#F8F7F0',
+  parchment: '#F2EFE6',
+  harvestGold: '#F4C95D',
+  amberLight: '#FBE8B3',
 };
 
 export const Colors = {
   light: {
-    primary: Palette.forestGreen,
-    primaryLight: Palette.leafGreen,
-    primaryMuted: Palette.paleGreen,
-    secondary: Palette.harvestGold,
-    secondaryLight: Palette.amberLight,
-    background: Palette.warmCream,
-    card: Palette.cardBackground,
-    surface: Palette.white,
-    surfaceAlt: Palette.parchment,
+    primary: Palette.primary,
+    primaryLight: Palette.secondary,
+    primaryMuted: Palette.primaryTint,
+    secondary: Palette.accent,
+    secondaryLight: Palette.accentLight,
+    background: Palette.background,
+    card: Palette.surface,
+    surface: Palette.surface,
+    surfaceAlt: Palette.surfaceAlt,
     text: Palette.charcoal,
     textSecondary: Palette.slateMedium,
     textMuted: Palette.slateLight,
     border: Palette.warmBorder,
-    borderLight: Palette.slateBorder,
+    borderLight: Palette.subtleBorder,
     rescue: Palette.rescueRed,
     rescueBackground: Palette.rescueLight,
-    success: Palette.leafGreen,
-    tint: Palette.forestGreen,
+    success: Palette.success,
+    tint: Palette.primary,
     tabIconDefault: Palette.slateMedium,
-    tabIconSelected: Palette.forestGreen,
+    tabIconSelected: Palette.primary,
   },
   dark: {
-    primary: Palette.sageGreen,
-    primaryLight: Palette.emeraldGreen,
-    primaryMuted: '#1B3828',
-    secondary: '#FBBF24',
-    secondaryLight: '#78350F',
+    primary: Palette.secondary,
+    primaryLight: Palette.primaryLight,
+    primaryMuted: '#1E362A',
+    secondary: Palette.accent,
+    secondaryLight: '#5C4410',
     background: '#121815',
-    card: '#1A231F',
-    surface: '#1F2B26',
-    surfaceAlt: '#26342E',
+    card: '#1C2621',
+    surface: '#1C2621',
+    surfaceAlt: '#233029',
     text: '#F1F5F9',
     textSecondary: '#94A3B8',
     textMuted: '#64748B',
     border: '#2A3C34',
-    borderLight: '#374941',
+    borderLight: '#32473D',
     rescue: '#F87171',
     rescueBackground: '#451A1A',
-    success: Palette.sageGreen,
-    tint: Palette.sageGreen,
+    success: Palette.secondary,
+    tint: Palette.secondary,
     tabIconDefault: '#64748B',
-    tabIconSelected: Palette.sageGreen,
+    tabIconSelected: Palette.secondary,
   },
 };
 
@@ -108,12 +134,6 @@ export const BorderRadius = {
 };
 
 export const Typography = {
-  fontFamily: {
-    regular: 'System',
-    medium: 'System',
-    semibold: 'System',
-    bold: 'System',
-  },
   sizes: {
     xs: 11,
     sm: 13,
@@ -138,25 +158,25 @@ export const Typography = {
 
 export const Shadows = {
   soft: {
-    shadowColor: '#1E293B',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowColor: '#245C46',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 3,
   },
   medium: {
-    shadowColor: '#1E293B',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
+    shadowColor: '#245C46',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.12,
+    shadowRadius: 14,
+    elevation: 5,
   },
   elevated: {
-    shadowColor: '#1E5128',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
-    elevation: 6,
+    shadowColor: '#245C46',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.16,
+    shadowRadius: 20,
+    elevation: 8,
   },
 };
 

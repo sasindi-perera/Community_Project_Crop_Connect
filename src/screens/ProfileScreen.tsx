@@ -10,7 +10,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { Palette, Spacing, BorderRadius, Shadows } from '../constants/theme';
 import { Header } from '../components/common/Header';
 import { Badge } from '../components/common/Badge';
-import { Button } from '../components/common/Button';
 import { useResponsive } from '../hooks/useResponsive';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
@@ -19,7 +18,7 @@ import { UserRole } from '../types/user';
 export const ProfileScreen: React.FC = () => {
   const { scaleSize, scaleFont, contentPadding } = useResponsive();
   const { user, role, switchRole } = useAuth();
-  const { isDark, mode, setMode } = useTheme();
+  const { isDark, setMode } = useTheme();
 
   const roles: { id: UserRole; title: string; icon: keyof typeof Ionicons.glyphMap }[] = [
     { id: 'farmer', title: 'Farmer', icon: 'leaf' },

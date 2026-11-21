@@ -7,7 +7,7 @@ export default function NotFoundScreen() {
     <>
       <Stack.Screen options={{ title: 'Screen Not Found' }} />
       <View style={styles.container}>
-        <Text style={styles.title}>This screen doesn't exist.</Text>
+        <Text style={styles.title}>This screen does not exist.</Text>
 
         <Link href="/" style={styles.link}>
           <Text style={styles.linkText}>Return to CropConnect Marketplace</Text>

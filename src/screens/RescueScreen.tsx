@@ -8,9 +8,8 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Palette, Spacing, BorderRadius, Shadows } from '../constants/theme';
+import { Palette, Spacing, BorderRadius } from '../constants/theme';
 import { Header } from '../components/common/Header';
-import { Badge } from '../components/common/Badge';
 import { CropListingCard } from '../components/home/CropListingCard';
 import { useResponsive } from '../hooks/useResponsive';
 import { useTheme } from '../hooks/useTheme';

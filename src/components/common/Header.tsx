@@ -20,7 +20,7 @@ export const Header: React.FC<HeaderProps> = ({
   onNotificationPress,
 }) => {
   const { scaleSize, scaleFont } = useResponsive();
-  const { role, switchRole, user } = useAuth();
+  const { role, switchRole } = useAuth();
   const { isDark } = useTheme();
 
   const handleRoleToggle = () => {

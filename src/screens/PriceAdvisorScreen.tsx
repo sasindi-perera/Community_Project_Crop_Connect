@@ -31,25 +31,36 @@ export const PriceAdvisorScreen: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [prediction, setPrediction] = useState<AIPricePredictionResponse | null>(null);
 
-  const handlePredict = async () => {
-    setLoading(true);
-    try {
-      const result = await predictFairPrice({
+  useEffect(() => {
+    let isMounted = true;
+
+    const timer = setTimeout(() => {
+      if (!isMounted) return;
+      setLoading(true);
+      predictFairPrice({
         cropName: selectedCrop,
         district: selectedDistrict,
         grade: selectedGrade,
         quantityKg: parseFloat(quantity) || 500,
         isRescue,
-      });
-      setPrediction(result);
-    } finally {
-      setLoading(false);
-    }
-  };
+      })
+        .then((result) => {
+          if (isMounted) {
+            setPrediction(result);
+          }
+        })
+        .finally(() => {
+          if (isMounted) {
+            setLoading(false);
+          }
+        });
+    }, 150);
 
-  useEffect(() => {
-    handlePredict();
-  }, [selectedCrop, selectedDistrict, selectedGrade, isRescue]);
+    return () => {
+      isMounted = false;
+      clearTimeout(timer);
+    };
+  }, [selectedCrop, selectedDistrict, selectedGrade, quantity, isRescue]);
 
   const grades: CropQualityGrade[] = ['A', 'B', 'C'];
 

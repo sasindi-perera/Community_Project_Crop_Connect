@@ -1,5 +1,5 @@
 import React from 'react';
-import ProfileScreen from '@/src/screens/ProfileScreen';
+import { ProfileScreen } from '@/src/screens';
 
 export default function ProfileTab() {
   return <ProfileScreen />;

@@ -9,11 +9,9 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Palette, Spacing, BorderRadius, Shadows } from '../constants/theme';
+import { Palette, Spacing, BorderRadius } from '../constants/theme';
 import { CROP_CATEGORIES } from '../constants/sriLanka';
 import { Header } from '../components/common/Header';
-import { Button } from '../components/common/Button';
-import { Badge } from '../components/common/Badge';
 import { MarketTicker } from '../components/home/MarketTicker';
 import { CropRescueBanner } from '../components/home/CropRescueBanner';
 import { CropListingCard } from '../components/home/CropListingCard';
@@ -25,13 +23,13 @@ import { INITIAL_MOCK_LISTINGS } from '../services/mockDataService';
 import { CropListing } from '../types/listing';
 
 export const HomeScreen: React.FC = () => {
-  const { scaleSize, scaleFont, contentPadding, isTablet } = useResponsive();
+  const { scaleSize, scaleFont, contentPadding } = useResponsive();
   const { role, user } = useAuth();
   const { isDark } = useTheme();
 
   const [refreshing, setRefreshing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [listings, setListings] = useState<CropListing[]>(INITIAL_MOCK_LISTINGS);
+  const [listings] = useState<CropListing[]>(INITIAL_MOCK_LISTINGS);
 
   const marketTickers = getMockMarketTickers();
   const rescueListings = listings.filter((l) => l.isRescueCrop);

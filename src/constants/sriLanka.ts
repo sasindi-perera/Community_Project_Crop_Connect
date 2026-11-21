@@ -55,6 +55,8 @@ export interface CropInfo {
 }
 
 export const POPULAR_CROPS: CropInfo[] = [
+  { id: 'rice', name: 'Rice (Samba / Nadu)', sinhalaName: 'සහල් (සම්බා / නාඩු)', tamilName: 'அரிசி', category: 'grains', perishability: 'low', typicalShelfLifeDays: 180, benchmarkPriceLkrPerKg: 220 },
+  { id: 'green_beans', name: 'Green Beans (Bonchi)', sinhalaName: 'බෝංචි', tamilName: 'பீன்ஸ்', category: 'vegetables', perishability: 'high', typicalShelfLifeDays: 4, benchmarkPriceLkrPerKg: 340 },
   { id: 'carrot', name: 'Carrot (Upcountry)', sinhalaName: 'කැරට්', tamilName: 'கேரட்', category: 'vegetables', perishability: 'medium', typicalShelfLifeDays: 7, benchmarkPriceLkrPerKg: 280 },
   { id: 'leeks', name: 'Leeks', sinhalaName: 'ලීක්ස්', tamilName: 'லீக்ஸ்', category: 'vegetables', perishability: 'high', typicalShelfLifeDays: 4, benchmarkPriceLkrPerKg: 210 },
   { id: 'cabbage', name: 'Cabbage', sinhalaName: 'ගෝවා', tamilName: 'முட்டைக்கோஸ்', category: 'vegetables', perishability: 'medium', typicalShelfLifeDays: 6, benchmarkPriceLkrPerKg: 160 },
